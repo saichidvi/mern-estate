@@ -22,6 +22,16 @@ app.get("/test", (req, res) => {
   res.send("Hey , you are on the server.");
 });
 
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Errror";
+  return res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
+});
+
 app.listen(3000, () => {
   console.log("Server is listening on the port no 3000!!!");
 });
