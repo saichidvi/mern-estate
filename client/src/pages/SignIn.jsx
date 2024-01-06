@@ -1,13 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice.js";
 
 export default function SignIp() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { error, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -17,7 +22,7 @@ export default function SignIp() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch("/server/auth/signin", {
         method: "POST",
         headers: {
@@ -27,16 +32,13 @@ export default function SignIp() {
       });
       const data = await res.json();
       if (data.success === false) {
-        setLoading(false);
-        setError(data.message);
+        dispatch(signInFailure(data.message));
         return;
       }
-      setLoading(false);
-      setError(null);
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (err) {
-      setLoading(false);
-      setError(err);
+      dispatch(signInFailure(err.message));
     }
   };
 
@@ -62,7 +64,7 @@ export default function SignIp() {
           disabled={loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 cursor-pointer"
         >
-          {loading ? "Loading" : "Sign Ip"}
+          {loading ? "Loading" : "Sign In"}
         </button>
       </form>
       <div className="flex gap-2 mt-5">
