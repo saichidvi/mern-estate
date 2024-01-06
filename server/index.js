@@ -18,9 +18,6 @@ mongoose
 
 app.use("/server/user", userRouter);
 app.use("/server/auth", authRouter);
-app.get("/test", (req, res) => {
-  res.send("Hey , you are on the server.");
-});
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
